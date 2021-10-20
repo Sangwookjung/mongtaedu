@@ -16,16 +16,19 @@ public class MemberRepository {
 
     //등록
     public void save(Member member) {
+
         em.persist(member);
     }
 
     //id로 Member 하나 조회
     public Member findOne(Long id) {
+
         return em.find(Member.class, id);
     }
 
     //Member 모두 조회, TypedQuery
     public List<Member> findAll() {
+
         return em.createQuery("select m from Member m", Member.class).getResultList();
     }
 
