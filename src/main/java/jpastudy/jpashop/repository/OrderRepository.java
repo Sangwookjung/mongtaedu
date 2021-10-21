@@ -53,7 +53,7 @@ public class OrderRepository {
         return QOrder.order.status.eq(orderStatus);
     }
 
-    //REST API 성능 최적화를 위한 Fetch Join 사용
+    //REST API 성능 최적화를 위한 Fetch Join 사용 Order,Member, Delivery
     public List<Order> findAllWithMemberDelivery() {
         return em.createQuery(
                         "select o from Order o" +
@@ -62,5 +62,15 @@ public class OrderRepository {
                 .getResultList();
     }
 
+    //REST API 성능 최적화를 위한 Fetch Join 사용 Order,Member, Delivery, OrderItem, Item
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                        "select distinct o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d" +
+                                " join fetch o.orderItems oi" +
+                                " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
 
 }
