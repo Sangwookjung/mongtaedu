@@ -50,6 +50,17 @@ public class OrderRepository {
         if(orderStatus == null) {
             return null;
             }
-            return QOrder.order.status.eq(orderStatus);
-        }
+        return QOrder.order.status.eq(orderStatus);
+    }
+
+    //REST API 성능 최적화를 위한 Fetch Join 사용
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                        "select o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
+
 }

@@ -71,8 +71,7 @@ public class MemberApiController {
 
         return new Result(memberDtoList.size(), memberDtoList);
     }
-    //static inner Class
-    //응답이나 요청에 사용할 DTO
+    //응답과 요청에 사용할 DTO Inner Class 선언
     @Data
     static class CreateMemberRequest {
         @NotEmpty
