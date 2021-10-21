@@ -64,7 +64,7 @@ public class ItemController {
         return "items/updateItemForm";
     }
 
-    @PostMapping(value = "/items/{itemId}/edit")
+    //@PostMapping(value = "/items/{itemId}/edit")
     public String updateItem(@ModelAttribute("bookForm") BookForm form) {
         Book book = new Book();
         book.setId(form.getId());
@@ -77,4 +77,9 @@ public class ItemController {
         return "redirect:/items";
     }
 
+    @PostMapping(value = "/items/{itemId}/edit")
+    public String updateItemDirtyChecking(@ModelAttribute("bookForm")BookForm form) {
+        itemService.updateItem(form.getId(), form.getName(), form.getPrice());
+        return "redirect:/items";
+    }
 }
