@@ -1,6 +1,8 @@
 package jpastudy.jpashop.web;
 
 import jpastudy.jpashop.domain.Member;
+import jpastudy.jpashop.domain.Order;
+import jpastudy.jpashop.domain.OrderSearch;
 import jpastudy.jpashop.domain.item.Item;
 import jpastudy.jpashop.service.ItemService;
 import jpastudy.jpashop.service.MemberService;
@@ -8,9 +10,7 @@ import jpastudy.jpashop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,7 +34,22 @@ public class OrderController {
     public String order(@RequestParam("memberId") Long memberId,
                         @RequestParam("itemId") Long itemId, @RequestParam("count") int count) {
         orderService.order(memberId, itemId, count);
-//        return "redirect:/orders";
-        return "redirect:/";
+        return "redirect:/orders";
+//        return "redirect:/";
     }
+
+    @GetMapping(value = "/orders")
+    public String orderList(@ModelAttribute("orderSearch") OrderSearch orderSearch,
+                            Model model) {
+        List<Order> orders = orderService.findOrders(orderSearch);
+        model.addAttribute("orders", orders);
+        return "order/orderList";
+    }
+
+    @PostMapping(value = "/orders/{orderId}/cancel")
+    public String cancelOrder(@PathVariable("orderId") Long orderId) {
+        orderService.cancelOrder(orderId);
+        return "redirect:/orders";
+    }
+
 }
