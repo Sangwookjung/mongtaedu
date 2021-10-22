@@ -84,6 +84,13 @@ public class OrderApiController {
          return orderQueryRepository.findOrdersQueryDtos();
      }
 
+     //V5 : 쿼리를 수행할 때 DTO 저장했기 때문에 그대로 사용하면 된다.
+     //쿼리 횟수를 줄이기 위해 Stream의 groupingBy 기능 사용한 메서드 호출
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> ordersV5() {
+        return orderQueryRepository.findOrdersQueryDtos_optimize_before();
+    }
+
 //    ToOne 관계는 페치조인으로 쿼리 수를 줄여서 해결하고,
 //    ToMany 관계는 hibernate.default_batch_fetch_size 로 최적화 하면 된다.
 
