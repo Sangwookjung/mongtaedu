@@ -2,6 +2,8 @@ package jpastudy.jpashop.api;
 
 import jpastudy.jpashop.domain.*;
 import jpastudy.jpashop.repository.OrderRepository;
+import jpastudy.jpashop.repository.order.query.OrderQueryDto;
+import jpastudy.jpashop.repository.order.query.OrderQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class OrderApiController {
     private final OrderRepository orderRepository;
+    private final OrderQueryRepository orderQueryRepository;
 
     //V1 : Entity를 API에 직접 노출
     //N+1 발생함
@@ -73,6 +76,12 @@ public class OrderApiController {
 
         return orderList.stream() //Stream<Order>
                 .map(order -> new OrderDto(order)).collect(toList());
+     }
+
+     //V4 : 쿼리를 수행할 때 DTO 저장했기 때문에 그대로 사용하면 된다.
+     @GetMapping("/api/v4/orders")
+     public List<OrderQueryDto> ordersV4() {
+         return orderQueryRepository.findOrdersQueryDtos();
      }
 
 //    ToOne 관계는 페치조인으로 쿼리 수를 줄여서 해결하고,
