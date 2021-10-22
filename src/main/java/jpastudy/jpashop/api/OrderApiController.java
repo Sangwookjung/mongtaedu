@@ -5,6 +5,7 @@ import jpastudy.jpashop.repository.OrderRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -51,13 +52,31 @@ public class OrderApiController {
     @GetMapping("/api/v3/orders")
     public List<OrderDto> ordersV3() {
         List<Order> orders = orderRepository.findAllWithItem();
+//        orders.forEach(System.out::println);
+        orders.forEach(order -> System.out.println(order));
+
         List<OrderDto> result = orders.stream()
                 .map(order -> new OrderDto(order))
                 .collect(toList());
         return result;
     }
 
+    //V3.1 : V3 + ToOne 관계인 Entity는 Fetch join으로 가져오고
+    //     : ToMany 관계인 Entitu를 가져올 때 Paging 오류 문제 해결하기 위해
+    //     : ToMany 관계는 Hibernate.default_batch_fetch_size 설정
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> orderV3_Paging(
+            @RequestParam(value = "offset", defaultValue="0") int offset,
+            @RequestParam(value = "limit", defaultValue="1") int limit) {
 
+        List<Order> orderList = orderRepository.findAllWithMemberDelivery(offset, limit);
+
+        return orderList.stream() //Stream<Order>
+                .map(order -> new OrderDto(order)).collect(toList());
+     }
+
+//    ToOne 관계는 페치조인으로 쿼리 수를 줄여서 해결하고,
+//    ToMany 관계는 hibernate.default_batch_fetch_size 로 최적화 하면 된다.
 
     //응답과 요청에 사용할 DTO Inner Class 선언
     @Data
@@ -66,7 +85,7 @@ public class OrderApiController {
         private int orderPrice; //주문 가격
         private int count; //주문 수량
 
-        public OrderItemDto(OrderItem orderItem) {
+        public OrderItemDto(OrderItem orderItem) {      //Lazy Loading 초기화
             itemName = orderItem.getItem().getName();
             orderPrice = orderItem.getOrderPrice();
             count = orderItem.getCount();
@@ -84,11 +103,12 @@ public class OrderApiController {
 
         public OrderDto(Order order) {
             orderId = order.getId();
-            name = order.getMember().getName();
+            name = order.getMember().getName();             //Lazy Loading 초기화
             orderDate = order.getOrderDate();
             orderStatus = order.getStatus();
-            address = order.getDelivery().getAddress();
-            orderItems = order.getOrderItems().stream()
+            address = order.getDelivery().getAddress();     //Lazy Loading 초기화
+
+            orderItems = order.getOrderItems().stream()     //Lazy Loading 초기화
                     .map(orderItem -> new OrderItemDto(orderItem))
                     .collect(toList());
         }

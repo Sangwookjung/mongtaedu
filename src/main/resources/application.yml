@@ -9,6 +9,8 @@ spring: #띄어쓰기 없음
       ddl-auto: create #띄어쓰기 6칸
     properties: #띄어쓰기 4칸
       hibernate: #띄어쓰기 6칸
+        #ToMany 관계 Entity OBJ 조회할 때 사용되는 IN 구문의 parameter 개수(ex 아래는 1000)
+        default_batch_fetch_size: 1000
         show_sql: true #띄어쓰기 8칸
         format_sql: true #띄어쓰기 8칸
 logging.level: #띄어쓰기 없음
